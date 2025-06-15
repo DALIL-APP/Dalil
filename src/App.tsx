@@ -26,6 +26,8 @@ import Complete from "./pages/Shopping/Complete";
 import { CartProvider } from "./pages/Shopping/CartContext";
 import { FavouritesProvider } from "./pages/Shopping/FavouritesContext";
 import Auth from "./components/Auth";
+import { Toaster } from "react-hot-toast";
+
 const token = localStorage.getItem("token");
 function App() {
   return (
@@ -64,6 +66,7 @@ function App() {
             <Route path="/SignUp" element={<SignUp />} />
           </Routes>
         </Router>
+        <Toaster />
       </FavouritesProvider>
     </CartProvider>
   );

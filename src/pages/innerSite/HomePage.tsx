@@ -145,14 +145,14 @@ const HomePage: React.FC = () => {
         {/* Overlay */}
         <div className="absolute inset-0 bg-black bg-opacity-60"></div>
 
-        <div className="container mx-auto px-4 h-full relative">
-          {/* Stepper/Slider Navigation (left) */}
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-center z-10">
+        <div className="container mx-auto px-4 h-full flex">
+          {/* Stepper/Slider Navigation (left) - now using flex instead of absolute */}
+          <div className="flex flex-col justify-center items-start z-10 mr-4">
             {[0, 1, 2].map((idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentSlide(idx)}
-                className={`mb-4 focus:outline-none ${
+                className={`focus:outline-none ${
                   currentSlide === idx
                     ? "w-8 h-8 flex items-center justify-center rounded-full bg-blue-600 text-white text-xl font-bold"
                     : "text-white text-xl font-bold"
@@ -165,22 +165,25 @@ const HomePage: React.FC = () => {
             ))}
           </div>
 
-          {/* Headline and Breadcrumb (upper right) */}
-          <div className="absolute top-10 right-0 z-10 flex flex-col items-end max-w-xl">
-            <span className="text-cyan-400 font-bold text-lg mb-2 self-end">
-              {heroSlides[currentSlide].breadcrumb}
-            </span>
-            <h1 className="text-white text-3xl md:text-5xl font-bold text-right leading-snug mb-2">
-              {heroSlides[currentSlide].headline}
-            </h1>
+          {/* Main content area */}
+          <div className="flex-1 flex flex-col justify-start items-end h-full relative pt-10">
+            {/* Headline and Breadcrumb (upper right) - now using flex instead of absolute */}
+            <div className="z-10 flex flex-col items-end max-w-xl">
+              <span className="text-cyan-400 font-bold text-lg mb-2">
+                {heroSlides[currentSlide].breadcrumb}
+              </span>
+              <h1 className="text-white text-3xl md:text-5xl font-bold text-right leading-snug mb-2">
+                {heroSlides[currentSlide].headline}
+              </h1>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Video and About Us Section (replaces previous video/features section) */}
-      <div className="container mx-auto px-4 py-16 flex flex-col md:flex-row gap-8 items-center bg-white">
+      <div className="px-4 container py-16 flex flex-col md:flex-row gap-8 items-center justify-between bg-white">
         {/* Video */}
-        <div className="md:w-1/2 flex justify-center">
+        <div className="justify-center">
           <div className="relative w-full max-w-xl rounded-2xl overflow-hidden shadow-lg">
             <video
               src={vid}
@@ -391,7 +394,7 @@ const HomePage: React.FC = () => {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {/* Card 1 */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
+          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between items-center text-center">
             <img src={Location} alt="service icon" className="w-30 h-30 mb-4" />
             <h4 className="font-bold text-lg mb-2">تحديد الموقع</h4>
             <p className="text-gray-600 mb-4">
@@ -399,10 +402,10 @@ const HomePage: React.FC = () => {
               بسهولة وتوفير معلومات حول الأماكن المناسبة لاحتياجاتهم، مثل
               المرافق العامة والمستشفيات والمدارس.
             </p>
-            <SubmitButton lable="عرض الخدمة" link="/Location" />
+            <SubmitButton label="عرض الخدمة" link="/Location" />
           </div>
           {/* Card 2 */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
+          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between items-center text-center">
             <img
               src={translateSign}
               alt="service icon"
@@ -414,10 +417,10 @@ const HomePage: React.FC = () => {
               والحصول على وصف صوتي أو نصي لمحتوى الصورة، مما يسهل عليهم التفاعل
               مع البيئة المحيطة.
             </p>
-            <SubmitButton lable="عرض الخدمة" link="/ObjectRecognition" />
+            <SubmitButton label="عرض الخدمة" link="/ObjectRecognition" />
           </div>
           {/* Card 3 */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
+          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between items-center text-center">
             <img
               src={translateSign}
               alt="service icon"
@@ -429,20 +432,20 @@ const HomePage: React.FC = () => {
               الإشارة إلى نصوص مكتوبة أو صوتية، مما يسهل التواصل مع الآخرين في
               مختلف المواقف.
             </p>
-            <SubmitButton lable="عرض الخدمة" link="/TranslateSign" />
+            <SubmitButton label="عرض الخدمة" link="/TranslateSign" />
           </div>
           {/* Card 4 */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
+          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between items-center text-center">
             <img src={Alert} alt="service icon" className="w-30 h-30 mb-4" />
             <h4 className="font-bold text-lg mb-2">التنبيهات</h4>
             <p className="text-gray-600 mb-4">
               خدمة التنبيهات الصوتية أو المرئية، مخصصة لمساعدة المستخدمين في
               تلقي الإشعارات الهامة أو التنبيهات الخاصة بالموقع أو الخدمات.
             </p>
-            <SubmitButton lable="عرض الخدمة" link="/Alerts" />
+            <SubmitButton label="عرض الخدمة" link="/Alerts" />
           </div>
           {/* Card 5 */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
+          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between items-center text-center">
             <img
               src={speechToText}
               alt="service icon"
@@ -453,10 +456,10 @@ const HomePage: React.FC = () => {
               خدمة تحويل الكلام المنطوق إلى نص مكتوب، مما يساعد المستخدمين ذوي
               الإعاقة السمعية أو النطقية على التواصل بشكل أفضل.
             </p>
-            <SubmitButton lable="عرض الخدمة" link="/STT" />
+            <SubmitButton label="عرض الخدمة" link="/STT" />
           </div>
           {/* Card 6 */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
+          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between items-center text-center">
             <img
               src={textToSpeech}
               alt="service icon"
@@ -467,10 +470,10 @@ const HomePage: React.FC = () => {
               خدمة تحويل الكلام المنطوق إلى نص مكتوب، مما يساعد المستخدمين ذوي
               الإعاقة السمعية أو النطقية على التواصل بشكل أفضل.
             </p>
-            <SubmitButton lable="عرض الخدمة" link="/TTS" />
+            <SubmitButton label="عرض الخدمة" link="/TTS" />
           </div>
           {/* Card 7 */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
+          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between items-center text-center">
             <img
               src={LearnSign}
               alt="service icon"
@@ -483,23 +486,17 @@ const HomePage: React.FC = () => {
               أساسية لتعزيز التفاهم والشمولية في المجتمع، مما يجعلها أداة تواصل
               مهمة في العديد من المجالات.
             </p>
-            <SubmitButton lable="عرض الخدمة" link="/SignLanguage" />
+            <SubmitButton label="عرض الخدمة" link="/SignLanguage" />
           </div>
         </div>
       </div>
 
       {/* Product Highlight Section - المنتجات */}
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row items-center gap-8 rounded-2xl p-6">
+        <div className="flex flex-col md:flex-row items-center gap-8 rounded-2xl justify-between">
           {/* Illustration */}
-          <div className="md:w-1/2 flex justify-center">
-            {/* Replace with your actual illustration */}
-            <img
-              src={EasyLife}
-              alt="منتجات"
-              className="w-full max-w-md mx-auto"
-            />
-          </div>
+          {/* Replace with your actual illustration */}
+          <img src={EasyLife} alt="منتجات" className="w-full max-w-md " />
           {/* Content */}
           <div className="md:w-1/2 text-right flex flex-col justify-center">
             <span className="bg-sky-100 text-sky-600 px-4 py-1 rounded-lg text-base font-bold mb-2 self-end">
@@ -539,7 +536,7 @@ const HomePage: React.FC = () => {
             </div>
             <div className="mt-4 text-center">
               <SubmitButton
-                lable="عرض المنتجات"
+                label="عرض المنتجات"
                 link="Shopping"
                 className="w-full"
               />

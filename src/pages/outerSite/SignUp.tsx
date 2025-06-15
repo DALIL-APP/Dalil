@@ -1,320 +1,21 @@
-// import AuthLayout from "../../components/AuthLayout";
-// import InputWithIcon from "../../components/InputWithIcon";
-// // import SubmitButton from "../../components/SubmitButton";
-// import { Mail, User, Calendar, Phone, MapPin, Lock } from "lucide-react";
-
-// const SignUp: React.FC = () => {
-//   const handleSubmit = (e: React.FormEvent) => {
-//     e.preventDefault();
-//     //TODO: implement handler
-//   };
-
-//   return (
-//     <AuthLayout>
-//       <h2 className="text-2xl lg:text-3xl font-bold text-blue-700 mb-2 text-right">
-//         إنشاء حساب جديد
-//       </h2>
-//       <p className="text-sm text-gray-700 mb-6 text-right">
-//         هل لديك حساب بالفعل؟
-//         <a href="/Login" className="text-blue-700 hover:underline font-medium">
-//           {" "}
-//           تسجيل الدخول
-//         </a>
-//       </p>
-//       <form onSubmit={handleSubmit} className="w-full flex flex-col">
-//         <div className="flex flex-col md:flex-row gap-0 md:gap-4 mb-0">
-//           <div className="w-full md:w-1/2 ">
-//             <InputWithIcon
-//               type="text"
-//               name="name"
-//               placeholder="الاسم"
-//               icon={User}
-//             />
-//           </div>
-//           <div className="w-full md:w-1/2">
-//             <InputWithIcon
-//               type="email"
-//               name="email"
-//               placeholder="البريد الالكتروني"
-//               icon={Mail}
-//             />
-//           </div>
-//         </div>
-//         <InputWithIcon
-//           type="date"
-//           name="dateOfBirth"
-//           placeholder="تاريخ الميلاد"
-//           icon={Calendar}
-//         />
-//         <div className="flex flex-col md:flex-row gap-0 md:gap-4 mb-0">
-//           <div className="w-full md:w-1/2">
-//             <InputWithIcon
-//               type="tel"
-//               name="phoneNumber"
-//               placeholder="رقم الهاتف"
-//               icon={Phone}
-//             />
-//           </div>
-//           <div className="w-full md:w-1/2">
-//             <InputWithIcon
-//               type="text"
-//               name="responsible"
-//               placeholder="اسم الشخص المسؤول"
-//               icon={User}
-//             />
-//           </div>
-//         </div>
-//         <InputWithIcon
-//           type="text"
-//           name="Location"
-//           placeholder="موقعك الحالي"
-//           icon={MapPin}
-//         />
-//         <div className="flex flex-col md:flex-row gap-0 md:gap-4 mb-0">
-//           <div className="w-full md:w-1/2">
-//             <InputWithIcon
-//               type="password"
-//               name="password"
-//               placeholder="كلمة السر"
-//               icon={Lock}
-//             />
-//           </div>
-//           <div className="w-full md:w-1/2">
-//             <InputWithIcon
-//               type="password"
-//               name="ConfirmPassword"
-//               placeholder="تأكيد كلمة السر"
-//               icon={Lock}
-//             />
-//           </div>
-//         </div>
-//         <button className="w-full text-center mx-auto block bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 font-semibold text-lg shadow-md">
-//           إنشاء حساب
-//         </button>
-//       </form>
-//     </AuthLayout>
-//   );
-// };
-
-// export default SignUp;
-
-// import AuthLayout from "../../components/AuthLayout";
-// import InputWithIcon from "../../components/InputWithIcon";
-// import { Mail, User, Calendar, Phone, MapPin, Lock } from "lucide-react";
-// import { useState } from "react";
-
-// const SignUp = () => {
-//   const [formData, setFormData] = useState({
-//     firstName: "",
-//     lastName: "",
-//     email: "",
-//     password: "",
-//     rePassword: "",
-//     phoneNumber: "",
-//     dateOfBirth: "",
-//     address: "",
-//     nameOfPersonInCharge: "",
-//     numberPhoneOfPersonInCharge: ""
-//   });
-
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [error, setError] = useState("");
-
-//   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { name, value } = e.target;
-//     setFormData(prev => ({ ...prev, [name]: value }));
-//   };
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setIsLoading(true);
-//     setError("");
-
-//     if (formData.password !== formData.rePassword) {
-//       setError("كلمات السر غير متطابقة");
-//       setIsLoading(false);
-//       return;
-//     }
-
-//     try {
-//       const response = await fetch(
-//         "https://dalail-project-daoud.vercel.app/api/v1/auth/signUp",
-//         {
-//           method: "POST",
-//           headers: { "Content-Type": "application/json" },
-//           body: JSON.stringify({
-//             firstName: formData.firstName,
-//             lastName: formData.lastName,
-//             email: formData.email,
-//             password: formData.password,
-//             rePassword: formData.rePassword,
-//             phoneNumber: formData.phoneNumber,
-//             dateOfBirth: formData.dateOfBirth,
-//             address: formData.address,
-//             nameOfPersonInCharge: formData.nameOfPersonInCharge,
-//             numberPhoneOfPersonInCharge: formData.numberPhoneOfPersonInCharge
-//           }),
-//         }
-//       );
-
-//       const data = await response.json();
-
-//       if (!response.ok) throw new Error(data.message || "Registration failed");
-//       if (data.success) {
-//         window.location.href = "/login";
-//       } else {
-//         setError(data.message || "Unknown error occurred");
-//       }
-//     } catch (err) {
-//       setError(err instanceof Error ? err.message : "Connection error");
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   return (
-//     <AuthLayout>
-//       <h2 className="text-2xl lg:text-3xl font-bold text-blue-700 mb-2 text-right">
-//         إنشاء حساب جديد
-//       </h2>
-
-//       <p className="text-sm text-gray-700 mb-6 text-right">
-//         هل لديك حساب بالفعل؟
-//         <a href="/login" className="text-blue-700 hover:underline font-medium">
-//           {" "}تسجيل الدخول
-//         </a>
-//       </p>
-
-//       {error && (
-//         <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-right">
-//           {error}
-//         </div>
-//       )}
-
-//       <form onSubmit={handleSubmit} className="w-full flex flex-col">
-//         {/* Name Fields */}
-//         <div className="flex flex-col md:flex-row gap-4 mb-0">
-//           <div className="w-full md:w-1/2">
-//             <InputWithIcon
-//               type="text"
-//               name="firstName"
-//               placeholder="الاسم الأول"
-//               icon={User}
-//               value={formData.firstName}
-//               onChange={handleChange}
-//               required
-//             />
-//           </div>
-//           <div className="w-full md:w-1/2">
-//             <InputWithIcon
-//               type="text"
-//               name="lastName"
-//               placeholder="الاسم الأخير"
-//               icon={User}
-//               value={formData.lastName}
-//               onChange={handleChange}
-//               required
-//             />
-//           </div>
-//         </div>
-
-//         {/* Email & Date of Birth */}
-//         <InputWithIcon
-//           type="email"
-//           name="email"
-//           placeholder="البريد الإلكتروني"
-//           icon={Mail}
-//           value={formData.email}
-//           onChange={handleChange}
-//           required
-//         />
-
-//         {/* Phone & Responsible Person */}
-//         <div className="flex flex-col md:flex-row gap-4 mb-0">
-//           <div className="w-full md:w-1/2">
-//             <InputWithIcon
-//               type="tel"
-//               name="phoneNumber"
-//               placeholder="رقم الهاتف"
-//               icon={Phone}
-//               value={formData.phoneNumber}
-//               onChange={handleChange}
-//               required
-//             />
-//           </div>
-//           <div className="w-full md:w-1/2">
-//             <InputWithIcon
-//               type="text"
-//               name="nameOfPersonInCharge"
-//               placeholder="اسم المسؤول"
-//               icon={User}
-//               value={formData.nameOfPersonInCharge}
-//               onChange={handleChange}
-//               required
-//             />
-//           </div>
-//         </div>
-
-//         {/* Password Fields */}
-//         <div className="flex flex-col md:flex-row gap-4 mb-4">
-//           <div className="w-full md:w-1/2">
-//             <InputWithIcon
-//               type="password"
-//               name="password"
-//               placeholder="كلمة السر"
-//               icon={Lock}
-//               value={formData.password}
-//               onChange={handleChange}
-//               required
-//               minLength={8}
-//             />
-//           </div>
-//           <div className="w-full md:w-1/2">
-//             <InputWithIcon
-//               type="password"
-//               name="rePassword"
-//               placeholder="تأكيد كلمة السر"
-//               icon={Lock}
-//               value={formData.rePassword}
-//               onChange={handleChange}
-//               required
-//             />
-//           </div>
-//         </div>
-
-//         <button
-//           type="submit"
-//           disabled={isLoading}
-//           className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700
-//                      focus:outline-none focus:ring-2 focus:ring-blue-500 transition
-//                      duration-200 font-semibold text-lg shadow-md disabled:opacity-70"
-//         >
-//           {isLoading ? "جاري التسجيل..." : "إنشاء حساب"}
-//         </button>
-//       </form>
-//     </AuthLayout>
-//   );
-// };
-
-// export default SignUp;
-
 import AuthLayout from "../../components/AuthLayout";
 import InputWithIcon from "../../components/InputWithIcon";
 import { Mail, User, Calendar, Phone, MapPin, Lock } from "lucide-react";
 import { useState } from "react";
 import axios from "axios";
-
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 interface ApiResponse {
-  success: boolean;
   message?: string;
+  err: string[];
   // Add other properties if your API returns more data
 }
 
 const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
-    name: "", // Will be split into firstName and lastName
+    firstName: "", // Will be split into firstName and lastName
+    lastName: "",
     email: "",
     dateOfBirth: "",
     phoneNumber: "",
@@ -324,7 +25,7 @@ const SignUp: React.FC = () => {
     ConfirmPassword: "", // Maps to rePassword
     responsiblePhone: "", // New field for numberPhoneOfPersonInCharge
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null | string[]>(null);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -337,18 +38,18 @@ const SignUp: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
 
     // Validation
     if (formData.password !== formData.ConfirmPassword) {
-      setError("كلمات السر غير متطابقة");
+      toast.error("كلمات السر غير متطابقة", {
+        id: "password-mismatch",
+        duration: 1000,
+        position: "top-center",
+      });
       return;
     }
 
     // Split name into first and last name
-    const nameParts = formData.name.split(" ");
-    const firstName = nameParts[0] || "moh";
-    const lastName = nameParts.slice(1).join(" ") || "داود";
 
     // Format date
     const formattedDate = formData.dateOfBirth
@@ -357,8 +58,8 @@ const SignUp: React.FC = () => {
 
     try {
       const requestData = {
-        firstName: formData,
-        lastName: lastName,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
         email: formData.email || "daoudmahmud@gmail.com",
         password: formData.password || "Daoud@3312",
         rePassword: formData.ConfirmPassword || "Daoud@3312",
@@ -375,10 +76,22 @@ const SignUp: React.FC = () => {
       );
 
       // Now response.data is properly typed as ApiResponse
-      if (response.data.success) {
+      if (!response.data.err) {
+        setError(null);
+        toast.success("تم التسجيل بنجاح", {
+          id: "signup-success",
+          duration: 1000,
+          position: "top-center",
+          icon: "🎉",
+        });
         navigate("/login");
       } else {
-        setError(response.data.message || "حدث خطأ أثناء التسجيل");
+        setError(response.data.err);
+        toast.error(response.data.message || "حدث خطأ أثناء التسجيل", {
+          id: "signup-error",
+          duration: 3000,
+          position: "top-center",
+        });
       }
     } catch (err) {
       if (err && typeof err === "object" && "response" in err) {
@@ -389,13 +102,26 @@ const SignUp: React.FC = () => {
             };
           };
         };
-        setError(
-          axiosError.response?.data?.message || "حدث خطأ أثناء الاتصال بالخادم"
+        toast.error(
+          axiosError.response?.data?.message || "حدث خطأ أثناء الاتصال بالخادم",
+          {
+            id: "axios-error",
+            duration: 1000,
+            position: "top-center",
+          }
         );
       } else if (err instanceof Error) {
-        setError(err.message);
+        toast.error(err.message, {
+          id: "general-error",
+          duration: 1000,
+          position: "top-center",
+        });
       } else {
-        setError("حدث خطأ غير متوقع");
+        toast.error("حدث خطأ غير متوقع", {
+          id: "unexpected-error",
+          duration: 1000,
+          position: "top-center",
+        });
       }
     }
   };
@@ -412,20 +138,27 @@ const SignUp: React.FC = () => {
           تسجيل الدخول
         </a>
       </p>
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-right">
-          {error}
-        </div>
-      )}
+
       <form onSubmit={handleSubmit} className="w-full flex flex-col">
+        {error && Array.isArray(error) ? (
+          <ul className="bg-red-100 text-red-500 text-sm flex flex-col gap-4 p-2 text-left rounded-xl mb-4">
+            {error.map((err, index) => (
+              <li key={index} className="text-red-500 text-sm">
+                {err}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-red-500 bg-red-100 text-sm">{error}</p>
+        )}
         <div className="flex flex-col md:flex-row gap-0 md:gap-4 mb-0">
           <div className="w-full md:w-1/2 ">
             <InputWithIcon
               type="text"
-              name="name"
-              placeholder="الاسم (الاسم الأول واللقب)"
+              name="firstName"
+              placeholder="الاسم الأول"
               icon={User}
-              value={formData.name}
+              value={formData.firstName}
               onChange={handleChange}
               required
             />
@@ -436,7 +169,7 @@ const SignUp: React.FC = () => {
               name="lastName"
               placeholder="الاسم الأخير"
               icon={User}
-              value={formData.name}
+              value={formData.lastName}
               onChange={handleChange}
               required
             />

@@ -13,6 +13,6 @@ export default function Auth({
   const pathName = useLocation().pathname;
   console.log(isAllowed);
 
-  if (isAllowed) return children;
+  if (!isAllowed) return children;
   return <Navigate to={redirectPath} state={{ from: pathName }} replace />;
 }

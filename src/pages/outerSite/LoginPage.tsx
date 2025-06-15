@@ -77,7 +77,6 @@
 
 // export default LoginPage;
 
-
 import React, { useState } from "react";
 import { Mail, EyeOff } from "lucide-react";
 import AuthLayout from "../../components/AuthLayout";
@@ -111,7 +110,7 @@ const LoginPage: React.FC = () => {
 
     try {
       const response = await axios.post<LoginResponse>(
-        "https://dalail-project-daoud.vercel.app/api/v1/auth/login",
+        "https://dalail-project-daoud.vercel.app/api/v1/auth/signIn",
         { email, password }
       );
 
@@ -131,18 +130,16 @@ const LoginPage: React.FC = () => {
 
   const handleApiError = (err: unknown) => {
     // Universal type-safe error handling
-    if (err && typeof err === 'object' && 'isAxiosError' in err) {
+    if (err && typeof err === "object" && "isAxiosError" in err) {
       const axiosError = err as {
         response?: {
           data?: {
             message?: string;
+            err?: string;
           };
         };
       };
-      setError(
-        axiosError.response?.data?.message || 
-        "البريد الإلكتروني أو كلمة المرور غير صحيحة"
-      );
+      setError(axiosError.response?.data?.err || "حدث خطأ غير متوقع");
     } else if (err instanceof Error) {
       setError(err.message);
     } else {
@@ -150,7 +147,7 @@ const LoginPage: React.FC = () => {
     }
   };
 
-   return (
+  return (
     <AuthLayout>
       <form onSubmit={handleSubmit} className="w-full space-y-6">
         <h2 className="text-2xl lg:text-3xl font-bold text-blue-700 mb-2 text-right">
@@ -172,6 +169,7 @@ const LoginPage: React.FC = () => {
           placeholder="البريد الالكتروني"
           icon={Mail}
           value={email}
+          required
           onChange={(e) => setEmail(e.target.value)}
         />
         <InputWithIcon
@@ -180,6 +178,7 @@ const LoginPage: React.FC = () => {
           placeholder="كلمة السر"
           icon={EyeOff}
           value={password}
+          required
           onChange={(e) => setPassword(e.target.value)}
         />
         <div className="text-left mb-6">
@@ -192,7 +191,11 @@ const LoginPage: React.FC = () => {
             هل نسيت كلمة السر؟
           </a>
         </div>
-        <SubmitButton label="ارسال" className="text-center w-full" link="/"/>
+        <SubmitButton
+          type="submit"
+          label="ارسال"
+          className="text-center w-full"
+        />
       </form>
     </AuthLayout>
   );

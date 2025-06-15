@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { Heart, ShoppingCart } from "lucide-react";
-import { useFavourites } from './FavouritesContext';
+import { useFavourites } from "./FavouritesContext";
 
 import wh1 from "../../assets/wheelchair1.png";
 import wh2 from "../../assets/wheelchair2.png";
@@ -29,16 +29,24 @@ const Favourite: React.FC = () => {
             disabled={favourites.length === 0}
           >
             <span className="text-lg">إزالة الكل من المفضلة</span>
-            <span className="text-red-500"> <Heart fill="red" color="red" size={20} /> </span>
+            <span className="text-red-500">
+              {" "}
+              <Heart fill="red" color="red" size={20} />{" "}
+            </span>
           </button>
         </div>
         {/* Favourite Products Grid */}
         {favourites.length === 0 ? (
-          <div className="text-center text-gray-400 py-16 font-bold text-xl">لا توجد منتجات في المفضلة</div>
+          <div className="text-center text-gray-400 py-16 font-bold text-xl">
+            لا توجد منتجات في المفضلة
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-8">
             {favourites.map((product) => (
-              <div key={product.id} className="bg-white rounded-xl shadow p-4 flex flex-col items-center relative">
+              <div
+                key={product.id}
+                className="bg-white rounded-xl shadow p-4 flex flex-col items-center relative"
+              >
                 {/* Favorite Heart */}
                 <button
                   className="absolute top-4 left-4 text-red-500 bg-white rounded-full p-1 shadow-md cursor-pointer"
@@ -47,9 +55,15 @@ const Favourite: React.FC = () => {
                   <Heart fill={"red"} color={"red"} size={24} />
                 </button>
                 {/* Product Image */}
-                <img src={product.image} alt={product.name} className="w-40 h-40 object-contain mb-4" />
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-40 h-40 object-contain mb-4"
+                />
                 {/* Product Name */}
-                <div className="text-right w-full font-bold text-base mb-2 text-blue-700">{product.name}</div>
+                <div className="text-right w-full font-bold text-base mb-2 text-blue-700">
+                  {product.name}
+                </div>
                 {/* Product Price */}
                 <div className="text-right w-full text-gray-500 text-sm mb-4">{`ج.م${product.price}`}</div>
                 {/* Add to Cart Button */}
