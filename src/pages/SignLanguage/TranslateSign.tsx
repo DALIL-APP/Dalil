@@ -6,6 +6,8 @@ import ServiceDetails from "@/components/ServiceTemplate";
 import Footer from "@/components/Footer";
 import filler from "../../assets/filler.png";
 import dot from "../../assets/Ellipse 4.png";
+import { ElevenLabsClient, play } from "@elevenlabs/elevenlabs-js";
+
 // Type definitions
 interface Landmark {
   x: number;
@@ -32,28 +34,62 @@ const DaleelSignLanguage: React.FC = () => {
   const [latestPrediction, setLatestPrediction] = useState<string>("...");
   const [cameraOpen, setCameraOpen] = useState<boolean>(false);
   const [handsInitialized, setHandsInitialized] = useState<boolean>(false);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoice, setSelectedVoice] =
+    useState<SpeechSynthesisVoice | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Initialize voices
+  useEffect(() => {
+    const loadVoices = () => {
+      const availableVoices = window.speechSynthesis.getVoices();
+      setVoices(availableVoices);
+
+      // Set default voice based on current mode
+      const defaultVoice = availableVoices.find((voice) =>
+        currentMode === "AR"
+          ? voice.lang.includes("ar")
+          : voice.lang.includes("en")
+      );
+
+      if (defaultVoice) {
+        setSelectedVoice(defaultVoice);
+      } else if (availableVoices.length > 0) {
+        setSelectedVoice(availableVoices[0]);
+      }
+    };
+
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, [currentMode]);
+
+  // Play text to speech when prediction changes
+  useEffect(() => {
+    if (
+      latestPrediction &&
+      latestPrediction !== "..." &&
+      latestPrediction !== "Waiting for hand..."
+    ) {
+      handleTextToSpeech(latestPrediction);
+    }
+  }, [latestPrediction]);
 
   // Initialize Mediapipe Hands
   useEffect(() => {
     if (!cameraOpen) return;
 
     const initializeHands = async () => {
-      // Use the global objects now available from the CDN scripts
       const hands = new (window as any).self.Hands({
         locateFile: (file: string) =>
           `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
-      });
-
-      const camera = new (window as any).self.Camera(videoRef.current!, {
-        onFrame: async () => {
-          await hands.send({ image: videoRef.current! });
-        },
-        width: 640,
-        height: 480,
       });
 
       hands.setOptions({
@@ -64,61 +100,15 @@ const DaleelSignLanguage: React.FC = () => {
       });
 
       const onResults = (results: Results) => {
-        const canvasCtx = canvasRef.current?.getContext("2d");
-        if (!canvasCtx || !canvasRef.current) return;
-
-        canvasCtx.save();
-        canvasCtx.clearRect(
-          0,
-          0,
-          canvasRef.current.width,
-          canvasRef.current.height
-        );
-
-        // Draw the video frame
-        canvasCtx.drawImage(
-          results.image,
-          0,
-          0,
-          canvasRef.current.width,
-          canvasRef.current.height
-        );
-
         if (
           !results.multiHandLandmarks ||
           results.multiHandLandmarks.length === 0 ||
           !tracking
         ) {
-          canvasCtx.restore();
           return;
         }
 
         const landmarks = results.multiHandLandmarks[0];
-
-        // Calculate bounding box
-        const margin = 20;
-        const xs = landmarks.map((p) => p.x * canvasRef.current!.width);
-        const ys = landmarks.map((p) => p.y * canvasRef.current!.height);
-        const minX = Math.min(...xs) - margin;
-        const minY = Math.min(...ys) - margin;
-        const maxX = Math.max(...xs) + margin;
-        const maxY = Math.max(...ys) + margin;
-        const boxWidth = maxX - minX;
-        const boxHeight = maxY - minY;
-
-        // Draw purple bounding box
-        canvasCtx.strokeStyle = "#FF00FF";
-        canvasCtx.lineWidth = 4;
-        canvasCtx.strokeRect(minX, minY, boxWidth, boxHeight);
-
-        // Draw yellow prediction text
-        canvasCtx.font = "bold 26px 'Cairo'";
-        canvasCtx.fillStyle = "yellow";
-        canvasCtx.save();
-        canvasCtx.scale(-1, 1);
-        const textWidth = canvasCtx.measureText(latestPrediction).width;
-        canvasCtx.fillText(latestPrediction, -minX - textWidth, minY - 10);
-        canvasCtx.restore();
 
         // Prepare data for WebSocket
         let data_aux: number[] = [];
@@ -141,8 +131,6 @@ const DaleelSignLanguage: React.FC = () => {
           };
           wsRef.current.send(JSON.stringify(message));
         }
-
-        canvasCtx.restore();
       };
 
       hands.onResults(onResults);
@@ -163,7 +151,7 @@ const DaleelSignLanguage: React.FC = () => {
     };
 
     initializeHands();
-  }, [cameraOpen, tracking, latestPrediction]);
+  }, [cameraOpen, tracking]);
 
   // WebSocket connection
   useEffect(() => {
@@ -178,7 +166,7 @@ const DaleelSignLanguage: React.FC = () => {
         ws.send(JSON.stringify(message));
       };
 
-      ws.onmessage = (event: MessageEvent) => {
+      ws.onmessage = async (event: MessageEvent) => {
         try {
           const message: WsMessage = JSON.parse(event.data);
           if (message.prediction) {
@@ -206,6 +194,37 @@ const DaleelSignLanguage: React.FC = () => {
     };
   }, [cameraOpen, currentMode]);
 
+  // Handle text to speech
+  const handleTextToSpeech = (text: string) => {
+    if (!text.trim() || !selectedVoice) return;
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = selectedVoice;
+    utterance.lang = selectedVoice.lang;
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+    };
+
+    utterance.onend = () => {
+      setIsSpeaking(false);
+    };
+
+    utterance.onerror = (event) => {
+      console.error("SpeechSynthesis error:", event);
+      setIsSpeaking(false);
+    };
+
+    utteranceRef.current = utterance;
+    window.speechSynthesis.speak(utterance);
+  };
+
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -220,6 +239,19 @@ const DaleelSignLanguage: React.FC = () => {
         };
         const newMode = modes[e.key];
         setCurrentMode(newMode);
+
+        // Update voice based on new mode
+        const availableVoices = window.speechSynthesis.getVoices();
+        const newVoice = availableVoices.find((voice) =>
+          newMode === "AR" || newMode === "Words"
+            ? voice.lang.includes("ar")
+            : voice.lang.includes("en")
+        );
+
+        if (newVoice) {
+          setSelectedVoice(newVoice);
+        }
+
         if (wsRef.current?.readyState === WebSocket.OPEN) {
           const message: WsMessage = { type: "mode", value: newMode };
           wsRef.current.send(JSON.stringify(message));
@@ -241,6 +273,7 @@ const DaleelSignLanguage: React.FC = () => {
   const handleCloseCamera = () => {
     setCameraOpen(false);
     setTracking(false);
+    window.speechSynthesis.cancel();
   };
 
   return (
@@ -296,16 +329,8 @@ const DaleelSignLanguage: React.FC = () => {
                 </button>
               </div>
               <div className="relative">
-                {/* Hidden video element (same as index.html) */}
-                <video ref={videoRef} style={{ display: "none" }} playsInline />
-                {/* Canvas that will show the video feed (same as index.html) */}
-                <canvas
-                  ref={canvasRef}
-                  width={640}
-                  height={480}
-                  className="border-2 border-green-500 rounded-lg"
-                  style={{ transform: "scaleX(-1)" }}
-                />
+                {/* Hidden video element */}
+                <video ref={videoRef} className="-scale-x-100" playsInline />
               </div>
               <div className="mt-4 w-full max-w-md mx-auto p-4 border border-gray-200 rounded-lg bg-gray-50 text-center">
                 <span className="block text-blue-600 font-bold mb-2">
@@ -314,14 +339,38 @@ const DaleelSignLanguage: React.FC = () => {
                 <span className="text-gray-700 text-lg">
                   {latestPrediction}
                 </span>
+                {isSpeaking && (
+                  <div className="mt-2 text-sm text-green-600">
+                    جاري قراءة النص...
+                  </div>
+                )}
               </div>
               <div className="bg-gray-100 p-4 rounded-lg w-full max-w-md">
-                <p className="text-gray-700 mb-2">
-                  <strong>S:</strong> {tracking ? "إيقاف التعرف" : "بدء التعرف"}
+                <p className="text-gray-700 mb-2 text-right">
+                  <strong>S: </strong>
+                  {tracking ? "إيقاف التعرف" : "بدء التعرف"}
                 </p>
-                <p className="text-gray-700">
-                  <strong>1:</strong> English | <strong>2:</strong> العربية |{" "}
-                  <strong>3:</strong> كلمات | <strong>4:</strong> أرقام
+                <p className="text-gray-700 mb-2 text-right">
+                  <p>
+                    <strong>1:</strong> English
+                  </p>
+                  <p>
+                    العربية <strong>:2</strong>
+                  </p>
+                  <p>
+                    كلمات <strong>:3</strong>
+                  </p>
+                  <p>
+                    أرقام <strong>:4</strong>
+                  </p>
+                  <p>
+                    <strong>{selectedVoice?.name || "غير محدد"}: </strong>
+                    الوضع الحالي{" "}
+                  </p>
+                  <p>
+                    <strong>{currentMode}: </strong>
+                    الصوت{" "}
+                  </p>
                 </p>
               </div>
             </>

@@ -114,7 +114,7 @@ const LoginPage: React.FC = () => {
         { email, password }
       );
 
-      if (response.data.success && response.data.token) {
+      if (response.data.token) {
         localStorage.setItem("authToken", response.data.token);
         localStorage.setItem("userData", JSON.stringify(response.data.user));
         navigate("/");

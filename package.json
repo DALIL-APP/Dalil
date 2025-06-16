@@ -10,12 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.2.0",
     "@googlemaps/js-api-loader": "^1.16.8",
     "@heroicons/react": "^2.2.0",
     "@vis.gl/react-google-maps": "^1.5.2",
     "axios": "^1.10.0",
     "axios-error": "^1.0.4",
     "clsx": "^2.1.1",
+    "dotenv": "^16.5.0",
     "lucide-react": "^0.507.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
