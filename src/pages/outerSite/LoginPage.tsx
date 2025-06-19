@@ -84,6 +84,7 @@ import InputWithIcon from "@/components/InputWithIcon";
 import SubmitButton from "@/components/SubmitButton";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 interface LoginResponse {
   success: boolean;
@@ -116,8 +117,13 @@ const LoginPage: React.FC = () => {
 
       if (response.data.token) {
         localStorage.setItem("authToken", response.data.token);
-        localStorage.setItem("userData", JSON.stringify(response.data.user));
-        navigate("/");
+        toast.success("تم تسجيل الدخول بنجاح", {
+          position: "top-center",
+          duration: 1000,
+        });
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
       } else {
         setError(response.data.message || "فشل تسجيل الدخول");
       }

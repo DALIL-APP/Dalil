@@ -49,29 +49,31 @@ const SignUp: React.FC = () => {
       return;
     }
 
-    // Split name into first and last name
-
     // Format date
     const formattedDate = formData.dateOfBirth
-      ? formData.dateOfBirth.replace(/-/g, "/").replace(/\/0/g, "/")
-      : "2002/8/23";
+      .replace(/-/g, "/")
+      .replace(/\/0/g, "/");
 
     try {
       const requestData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        email: formData.email || "daoudmahmud@gmail.com",
-        password: formData.password || "Daoud@3312",
-        rePassword: formData.ConfirmPassword || "Daoud@3312",
-        phoneNumber: formData.phoneNumber || "01092783773",
+        email: formData.email,
+        password: formData.password,
+        rePassword: formData.ConfirmPassword,
+        phoneNumber: formData.phoneNumber,
         dateOfBirth: formattedDate,
-        address: formData.Location || "damnhour",
-        nameOfPersonInCharge: formData.responsible || "mohamed",
-        numberPhoneOfPersonInCharge: formData.responsiblePhone || "01063102521",
+        address: formData.Location,
+        nameOfPersonInCharge: formData.responsible,
+        numberPhoneOfPersonInCharge: formData.responsiblePhone,
       };
 
       const response = await axios.post<ApiResponse>(
         "https://dalail-project-daoud.vercel.app/api/v1/auth/signUp",
+        requestData
+      );
+      await axios.put<ApiResponse>(
+        "https://dalail-project-daoud.vercel.app/api/v1/user/update",
         requestData
       );
 
